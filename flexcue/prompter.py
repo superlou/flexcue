@@ -12,6 +12,18 @@ class Prompter(wx.Frame):
         self.font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
             wx.FONTWEIGHT_BOLD, False, 'Freesans 10 Pitch')
 
+        self.speed = 2
+        self.y_scroll = 0
+
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
+        self.timer.Start(30)
+        self.prompter = None
+
+    def update_animation(self, event):
+        self.y_scroll -= self.speed
+        self.Refresh()
+
     @property
     def script(self):
         return self._script
@@ -25,7 +37,7 @@ class Prompter(wx.Frame):
         dc = wx.ClientDC(self)
         dc.SetFont(self.font)
         text = wordwrap(self.script, self.GetSize()[0], dc)
-        dc.DrawText(text, 0, 0)
+        dc.DrawText(text, 0, self.y_scroll)
 
     def get_bitmap(self):
         dc = wx.ClientDC(self)
