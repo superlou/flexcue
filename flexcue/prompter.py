@@ -1,4 +1,6 @@
 import wx
+import wx.lib
+from .util import wordwrap
 
 
 class Prompter(wx.Frame):
@@ -22,7 +24,8 @@ class Prompter(wx.Frame):
     def paint(self, event):
         dc = wx.ClientDC(self)
         dc.SetFont(self.font)
-        dc.DrawText(self.script, 0, 0)
+        text = wordwrap(self.script, self.GetSize()[0], dc)
+        dc.DrawText(text, 0, 0)
 
     def get_bitmap(self):
         dc = wx.ClientDC(self)
