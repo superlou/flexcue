@@ -1,7 +1,7 @@
 import wx
 from wx.richtext import RichTextCtrl
-from .util import scale_bitmap
-from flexcue.prompter import Prompter
+from .prompter import Prompter
+from .prompter_monitor import PrompterMonitor
 
 
 class Editor(wx.Frame):
@@ -13,6 +13,7 @@ class Editor(wx.Frame):
 
     def create_prompter(self):
         self.prompter = Prompter(None, title='Prompter')
+        self.monitor.prompter = self.prompter
 
     def init_ui(self):
         menubar = wx.MenuBar()
@@ -26,28 +27,10 @@ class Editor(wx.Frame):
         self.SetMenuBar(menubar)
 
         self.text_ctrl = RichTextCtrl(self, size=(250, 100))
-
-        self.monitor = wx.Panel(self, -1, size=(100, 100))
-        self.monitor.Bind(wx.EVT_PAINT, self.paint_panel)
-        self.monitor.SetDoubleBuffered(True)    # Prevent flicker on Windows
-
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.update, self.timer)
-        self.timer.Start(20)
+        self.monitor = PrompterMonitor(self, size=(100, 100))
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         hbox.Add(self.text_ctrl)
         hbox.Add(self.monitor)
         self.SetAutoLayout(True)
         self.SetSizer(hbox)
-
-    def update(self, event):
-        self.monitor.Refresh()
-
-    def paint_panel(self, event):
-        if self.prompter:
-            bitmap = self.prompter.get_bitmap()
-            bitmap = scale_bitmap(bitmap, self.monitor.GetSize())
-            dc = wx.BufferedPaintDC(self.monitor)
-            dc.Clear()
-            dc.DrawBitmap(bitmap, 0, 0)
