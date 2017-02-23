@@ -8,13 +8,7 @@ class Editor(wx.Frame):
     def __init__(self, parent, title):
         super().__init__(parent, title=title)
         self.prompter = None
-        self.script = """[SHAMAN]
-You’re lucky to be alive. Many
-strong men have fallen to the
-gatekeepers.
-
-[SHAMAN]
-Here, take a sip."""
+        self.script = ""
 
         self.init_ui()
         self.Show()
@@ -37,7 +31,7 @@ Here, take a sip."""
 
         self.rtc = RichTextCtrl(self, size=(250, 240))
         self.rtc.Bind(wx.EVT_KEY_UP, self.key_up)
-        self.load_script(self.rtc, self.script)
+        self.load_script(self.script)
         self.monitor = PrompterMonitor(self, size=(320, 240))
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -50,8 +44,15 @@ Here, take a sip."""
         self.script = self.rtc.GetValue()
         self.update_prompter_script()
 
-    def load_script(self, rtc, script):
-        rtc.WriteText(script)
+    def load_script(self, script):
+        self.rtc.Clear()
+        self.rtc.WriteText(script)
+        self.update_prompter_script()
+
+    def load_script_from_file(self, filename):
+        with open(filename) as script_file:
+            self.script = script_file.read()
+            self.load_script(self.script)
 
     def update_prompter_script(self):
         if self.prompter:
