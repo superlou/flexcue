@@ -1,6 +1,7 @@
 import wx
 from wx.richtext import RichTextCtrl
 from .util import scale_bitmap
+from flexcue.prompter import Prompter
 
 
 class Editor(wx.Frame):
@@ -9,6 +10,9 @@ class Editor(wx.Frame):
         self.prompter = None
         self.init_ui()
         self.Show()
+
+    def create_prompter(self):
+        self.prompter = Prompter(None, title='Prompter')
 
     def init_ui(self):
         menubar = wx.MenuBar()
