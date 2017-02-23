@@ -9,8 +9,6 @@ class Prompter(wx.Frame):
         self.Bind(wx.EVT_PAINT, self.paint)
         self.Show()
         self._script = ""
-        self.font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
-            wx.FONTWEIGHT_BOLD, False, 'Freesans 10 Pitch')
 
         self.speed = 2
         self.y_scroll = 0
@@ -19,6 +17,13 @@ class Prompter(wx.Frame):
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
         self.timer.Start(30)
         self.prompter = None
+
+        self.text_color = wx.Colour(255, 255, 255)
+        self.background_color = wx.Colour(0, 0, 0)
+        self.background_brush = wx.Brush(self.background_color)
+
+        self.font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
+            wx.FONTWEIGHT_BOLD, False, 'Freesans 10 Pitch')
 
     def update_animation(self, event):
         self.y_scroll -= self.speed
@@ -35,9 +40,13 @@ class Prompter(wx.Frame):
 
     def paint(self, event):
         dc = wx.ClientDC(self)
+        dc.SetBackground(self.background_brush)
+        dc.Clear()
+        dc.SetTextForeground(self.text_color)
         dc.SetFont(self.font)
         text = wordwrap(self.script, self.GetSize()[0], dc)
         dc.DrawText(text, 0, self.y_scroll)
+
 
     def get_bitmap(self):
         dc = wx.ClientDC(self)
