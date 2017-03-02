@@ -1,6 +1,6 @@
 import wx
 import wx.lib
-from .util import wordwrap
+from .util import wordwrap, execution_time
 from .script_line import ScriptLine
 
 
@@ -19,7 +19,7 @@ class Prompter(wx.Frame):
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
-        self.timer.Start(30)
+        self.timer.Start(16)
         self.prompter = None
 
         self.text_color = wx.Colour(255, 255, 255)
@@ -64,6 +64,7 @@ class Prompter(wx.Frame):
         self.make_line_bitmaps()
         self.Refresh()
 
+    @execution_time
     def paint(self, event):
         dc = wx.ClientDC(self)
         lb = self.script_line[0]
@@ -76,7 +77,6 @@ class Prompter(wx.Frame):
             dc.DrawBitmap(script_line.bitmap, 0, draw_y)
             draw_y += script_line.height
             script_line_index += 1
-
 
     def get_bitmap(self):
         dc = wx.ClientDC(self)

@@ -1,4 +1,21 @@
 import wx
+import time
+
+
+smooth = 0
+
+def execution_time(func):
+    def wrapper(*arg, **kw):
+        global smooth
+        '''source: http://www.daniweb.com/code/snippet368.html'''
+        t1 = time.time()
+        result = func(*arg, **kw)
+        t2 = time.time()
+        delta = t2 - t1
+        smooth = 0.95 * smooth + 0.05 * delta
+        print(smooth)
+        return result
+    return wrapper
 
 
 def scale_bitmap(bitmap, size):
@@ -7,6 +24,7 @@ def scale_bitmap(bitmap, size):
     image = image.Scale(width, height)
     result = wx.Bitmap(image)
     return result
+
 
 def wordwrap(text, width, dc, breakLongWords=True, margin=0):
     """

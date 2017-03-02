@@ -1,6 +1,6 @@
 import wx
 import wx.lib
-from .util import wordwrap
+from .util import wordwrap, execution_time
 
 
 class Prompter(wx.Frame):
@@ -10,12 +10,12 @@ class Prompter(wx.Frame):
         self.Show()
         self._script = ""
 
-        self.speed = 2
+        self.speed = 5
         self.y_scroll = 0
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
-        self.timer.Start(30)
+        self.timer.Start(17)
         self.prompter = None
 
         self.text_color = wx.Colour(255, 255, 255)
@@ -46,7 +46,6 @@ class Prompter(wx.Frame):
         dc.SetFont(self.font)
         text = wordwrap(self.script, self.GetSize()[0], dc)
         dc.DrawText(text, 0, self.y_scroll)
-
 
     def get_bitmap(self):
         dc = wx.ClientDC(self)

@@ -1,6 +1,6 @@
 import wx
 from wx.richtext import RichTextCtrl
-from .prompter_line_bitmaps import Prompter
+from .prompter_naive import Prompter
 from .prompter_monitor import PrompterMonitor
 
 

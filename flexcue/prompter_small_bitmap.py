@@ -1,7 +1,7 @@
 import wx
 import wx.lib
 from wx.lib.colourchooser.canvas import BitmapBuffer
-from .util import wordwrap
+from .util import wordwrap, execution_time
 
 
 class Prompter(wx.Frame):
@@ -11,9 +11,9 @@ class Prompter(wx.Frame):
         self.Show()
         self._script = ""
 
-        self.frame_rate = 50
+        self.frame_rate = 60
 
-        self.speed = 50 / self.frame_rate
+        self.speed = 60 / self.frame_rate
         self.y_scroll = 0
 
         self.bitmap = wx.Bitmap(800, 800 * 9 / 16)
@@ -66,13 +66,12 @@ class Prompter(wx.Frame):
         scaledImage = self.bitmap.ConvertToImage().Scale(*size)
         dc.DrawBitmap(wx.Bitmap(scaledImage), 0, 0)
 
-
     def get_bitmap(self):
-        # dc = wx.ClientDC(self)
-        # size = dc.Size
-        # bmp = wx.Bitmap(size.width, size.height)
-        # memDC = wx.MemoryDC()
-        # memDC.SelectObject(self.bitmap)
-        # memDC.Blit(0, 0, size.width, size.height, dc, 0, 0)
-        # memDC.SelectObject(wx.NullBitmap)
+        dc = wx.ClientDC(self)
+        size = dc.Size
+        bmp = wx.Bitmap(size.width, size.height)
+        memDC = wx.MemoryDC()
+        memDC.SelectObject(self.bitmap)
+        memDC.Blit(0, 0, size.width, size.height, dc, 0, 0)
+        memDC.SelectObject(wx.NullBitmap)
         return self.bitmap
