@@ -8,13 +8,14 @@ class PrompterMonitor(wx.Panel):
         self.Bind(wx.EVT_PAINT, self.paint)
         self.SetDoubleBuffered(True)    # Prevent flicker on Windows
 
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.update, self.timer)
-        self.timer.Start(20)
         self.prompter = None
 
-    def update(self, event):
-        self.Refresh()
+    def update(self, bitmap):
+        dc = wx.ClientDC(self)
+        memDC = wx.MemoryDC()
+        memDC.SelectObject(bitmap)
+        dc.StretchBlit(0, 0, *self.GetSize(), memDC, 0, 0, *memDC.GetSize())
+        memDC.SelectObject(wx.NullBitmap)
 
     def paint(self, event):
         if self.prompter:

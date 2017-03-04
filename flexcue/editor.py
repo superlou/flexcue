@@ -15,7 +15,7 @@ class Editor(wx.Frame):
 
     def create_prompter(self):
         self.prompter = Prompter(None, title='Prompter')
-        self.monitor.prompter = self.prompter
+        self.prompter.monitor_update_callback = self.monitor.update
         self.update_prompter_script()
 
     def init_ui(self):

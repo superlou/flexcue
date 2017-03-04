@@ -12,7 +12,7 @@ class Prompter(wx.Frame):
         self._script = ""
         self.script_lines = []
 
-        self.speed = 5
+        self.speed = 4
         self.y_scroll = 0
 
         self.buffer = wx.Bitmap(*self.GetSize())
@@ -28,10 +28,11 @@ class Prompter(wx.Frame):
         self.background_color = wx.Colour(0, 0, 0)
         self.background_brush = wx.Brush(self.background_color)
 
-        self.font = wx.Font(50, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
+        self.font = wx.Font(100, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
             wx.FONTWEIGHT_BOLD, False, 'Freesans 10 Pitch')
 
         self.line_bitmaps = []
+        self.monitor_update_callback = None
 
     def resize(self, event):
         self.make_line_bitmaps()
@@ -41,6 +42,9 @@ class Prompter(wx.Frame):
     def update_animation(self, event):
         self.y_scroll -= self.speed
         self.Refresh()
+
+        if self.monitor_update_callback:
+            self.monitor_update_callback(self.buffer)
 
     def make_line_bitmaps(self):
         dc = wx.ClientDC(self)
