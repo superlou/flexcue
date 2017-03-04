@@ -1,5 +1,5 @@
 import wx
-from .util import scale_bitmap
+from .util import scale_bitmap, execution_time
 
 
 class PrompterMonitor(wx.Panel):
