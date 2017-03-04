@@ -5,8 +5,14 @@ from .script_line import ScriptLine
 
 
 class Prompter(wx.Frame):
-    def __init__(self, parent, title):
-        super().__init__(parent, title=title, size=(320, 240))
+    def __init__(self, parent, title, display=None):
+        if display:
+            x, y, width, height = display.GetGeometry()
+            super().__init__(parent, title=title, size=(width, height),
+                             pos=(x, y), style=wx.NO_BORDER)
+        else:
+            super().__init__(parent, title=title, size=(320, 240))
+
         self.Bind(wx.EVT_PAINT, self.paint)
         self.Show()
         self._script = ""

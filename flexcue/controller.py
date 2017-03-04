@@ -13,8 +13,17 @@ class Controller(wx.Frame):
         self.init_ui()
         self.Show()
 
+    def secondary_display(self):
+        for index in range(wx.Display.GetCount()):
+            display = wx.Display(index)
+            if not display.IsPrimary():
+                return display
+
+        return None
+
     def create_prompter(self):
-        self.prompter = Prompter(None, title='Prompter')
+        display = self.secondary_display()
+        self.prompter = Prompter(None, 'Prompter', display)
         self.prompter.monitor_update_callback = self.monitor.update
         self.update_prompter_script()
 
