@@ -21,7 +21,7 @@ class Prompter(wx.Frame):
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
-        self.timer.Start(30)
+        self.timer.Start(20)
         self.prompter = None
 
         self.text_color = wx.Colour(255, 255, 255)
@@ -67,7 +67,6 @@ class Prompter(wx.Frame):
         self.make_line_bitmaps()
         self.Refresh()
 
-    @execution_time
     def paint(self, event):
         memDC = wx.MemoryDC()
         memDC.SelectObject(self.buffer)

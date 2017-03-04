@@ -18,8 +18,8 @@ class PrompterMonitor(wx.Panel):
 
     def paint(self, event):
         if self.prompter:
-            bitmap = self.prompter.get_bitmap()
-            bitmap = scale_bitmap(bitmap, self.GetSize())
-            dc = wx.BufferedPaintDC(self)
-            dc.Clear()
-            dc.DrawBitmap(bitmap, 0, 0)
+            dc = wx.ClientDC(self)
+            memDC = wx.MemoryDC()
+            memDC.SelectObject(self.prompter.get_bitmap())
+            dc.StretchBlit(0, 0, *self.GetSize(), memDC, 0, 0, *memDC.GetSize())
+            memDC.SelectObject(wx.NullBitmap)
