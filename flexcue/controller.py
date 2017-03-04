@@ -4,7 +4,7 @@ from .prompter_line_bitmap_buffered import Prompter
 from .prompter_monitor import PrompterMonitor
 
 
-class Editor(wx.Frame):
+class Controller(wx.Frame):
     def __init__(self, parent, title):
         super().__init__(parent, title=title)
         self.prompter = None
