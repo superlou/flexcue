@@ -2,6 +2,7 @@ import wx
 import wx.lib
 from .util import wordwrap, execution_time
 from .script_line import ScriptLine
+import time
 
 
 class Prompter(wx.Frame):
@@ -14,11 +15,12 @@ class Prompter(wx.Frame):
             super().__init__(parent, title=title, size=(320, 240))
 
         self.Bind(wx.EVT_PAINT, self.paint)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.erase_background)
         self.Show()
         self._script = ""
         self.script_lines = []
 
-        self.speed = 4
+        self.speed = 1
         self.y_scroll = 0
 
         self.buffer = wx.Bitmap(*self.GetSize())
@@ -26,7 +28,7 @@ class Prompter(wx.Frame):
         self.Bind(wx.EVT_SIZE, self.resize)
 
         self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
+        self.Bind(wx.EVT_TIMER, self.update_buffer, self.timer)
         self.timer.Start(20)
         self.prompter = None
 
@@ -40,14 +42,40 @@ class Prompter(wx.Frame):
         self.line_bitmaps = []
         self.monitor_update_callback = None
 
+        self.prev_paint_time = 0
+
     def resize(self, event):
         self.make_line_bitmaps()
         self.buffer = wx.Bitmap(*self.GetSize())
         self.Refresh()
 
-    def update_animation(self, event):
+    def erase_background(self, event):
+        pass
+
+    def update_buffer(self, event):
+        now = time.time()
+        print(now - self.prev_paint_time)
+        self.prev_paint_time = now
+                
         self.y_scroll -= self.speed
-        self.Refresh()
+
+        memDC = wx.MemoryDC()
+        memDC.SelectObject(self.buffer)
+
+        lb = self.script_line[0]
+
+        draw_y = self.y_scroll
+        script_line_index = 0
+
+        while (draw_y < memDC.GetSize()[1]):
+            script_line = self.script_line[script_line_index]
+            memDC.DrawBitmap(script_line.bitmap, 0, draw_y)
+            draw_y += script_line.height
+            script_line_index += 1
+
+        memDC.SelectObject(wx.NullBitmap)
+
+        self.Refresh(eraseBackground=False)
 
         if self.monitor_update_callback:
             self.monitor_update_callback(self.buffer)
@@ -75,27 +103,11 @@ class Prompter(wx.Frame):
     def script(self, new_script):
         self._script = new_script
         self.make_line_bitmaps()
-        self.Refresh()
+        self.Refresh(eraseBackground=False)
 
     def paint(self, event):
-        memDC = wx.MemoryDC()
-        memDC.SelectObject(self.buffer)
-
-        lb = self.script_line[0]
-
-        draw_y = self.y_scroll
-        script_line_index = 0
-
-        while (draw_y < memDC.GetSize()[1]):
-            script_line = self.script_line[script_line_index]
-            memDC.DrawBitmap(script_line.bitmap, 0, draw_y)
-            draw_y += script_line.height
-            script_line_index += 1
-
         dc = wx.ClientDC(self)
-        size = dc.Size
-        dc.Blit(0, 0, size.width, size.height, memDC, 0, 0)
-        memDC.SelectObject(wx.NullBitmap)
+        dc.DrawBitmap(self.buffer, 0, 0)
 
     def get_bitmap(self):
         return self.buffer
