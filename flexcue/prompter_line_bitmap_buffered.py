@@ -29,7 +29,7 @@ class Prompter(wx.Frame):
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_buffer, self.timer)
-        self.framerate = 60
+        self.framerate = 50
         self.timer.Start(1000 / self.framerate)
         self.prompter = None
 
@@ -75,6 +75,7 @@ class Prompter(wx.Frame):
         memDC.SelectObject(wx.NullBitmap)
 
         self.Refresh(eraseBackground=False)
+        self.Update()
 
         if self.monitor_update_callback:
             self.monitor_update_callback(self.buffer)
