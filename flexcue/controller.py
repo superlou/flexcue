@@ -2,7 +2,7 @@ import wx
 from wx.richtext import RichTextCtrl
 from enum import Enum
 from .prompter_line_bitmap_buffered import Prompter
-from .prompter_monitor import PrompterMonitor
+from .prompter_monitor import PrompterMonitor, EVT_SPEED_CHANGED
 
 
 class Controller(wx.Frame):
@@ -45,6 +45,7 @@ class Controller(wx.Frame):
         self.load_script(self.script)
         self.monitor = PrompterMonitor(self)
         self.monitor.Bind(wx.EVT_LEFT_DCLICK, self.monitor_fullscreen_toggle)
+        self.monitor.Bind(EVT_SPEED_CHANGED, self.change_speed)
 
         self.SetAutoLayout(True)
 
@@ -52,6 +53,14 @@ class Controller(wx.Frame):
             self.layout_monitor_fullscreen()
         else:
             self.layout_side_by_side()
+
+    def change_speed(self, event):
+        if event.change == 'increase':
+            self.prompter.speed += 1
+        elif event.change == 'decrease':
+            self.prompter.speed += -1
+        elif event.change == 'stop':
+            self.prompter.speed = 0
 
     def layout_side_by_side(self):
         self.layout = ControllerLayout.SIDE_BY_SIDE
