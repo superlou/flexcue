@@ -53,10 +53,10 @@ class Prompter(wx.Frame):
         pass
 
     def update_buffer(self, event):
-        now = time.time()
-        print(now - self.prev_paint_time)
-        self.prev_paint_time = now
-                
+        # now = time.time()
+        # print(now - self.prev_paint_time)
+        # self.prev_paint_time = now
+
         self.y_scroll -= self.speed
 
         memDC = wx.MemoryDC()

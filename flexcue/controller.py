@@ -1,5 +1,6 @@
 import wx
 from wx.richtext import RichTextCtrl
+from enum import Enum
 from .prompter_line_bitmap_buffered import Prompter
 from .prompter_monitor import PrompterMonitor
 
@@ -10,6 +11,7 @@ class Controller(wx.Frame):
         self.prompter = None
         self.script = ""
 
+        self.layout = ControllerLayout.SIDE_BY_SIDE
         self.init_ui()
         self.Show()
 
@@ -38,16 +40,39 @@ class Controller(wx.Frame):
         menubar.Append(helpm, '&Help')
         self.SetMenuBar(menubar)
 
-        self.rtc = RichTextCtrl(self, size=(250, 240))
+        self.rtc = RichTextCtrl(self)
         self.rtc.Bind(wx.EVT_KEY_UP, self.key_up)
         self.load_script(self.script)
-        self.monitor = PrompterMonitor(self, size=(320, 240))
+        self.monitor = PrompterMonitor(self)
+        self.monitor.Bind(wx.EVT_LEFT_DCLICK, self.monitor_fullscreen_toggle)
 
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
-        hbox.Add(self.rtc)
-        hbox.Add(self.monitor)
         self.SetAutoLayout(True)
-        self.SetSizer(hbox)
+
+        if self.layout == ControllerLayout.MONITOR_FULLSCREEN:
+            self.layout_monitor_fullscreen()
+        else:
+            self.layout_side_by_side()
+
+    def layout_side_by_side(self):
+        self.layout = ControllerLayout.SIDE_BY_SIDE
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.rtc, 1, wx.EXPAND)
+        sizer.Add(self.monitor, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+        self.Layout()
+
+    def layout_monitor_fullscreen(self):
+        self.layout = ControllerLayout.MONITOR_FULLSCREEN
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.monitor, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+        self.Layout()
+
+    def monitor_fullscreen_toggle(self, event):
+        if self.layout == ControllerLayout.MONITOR_FULLSCREEN:
+            self.layout_side_by_side()
+        else:
+            self.layout_monitor_fullscreen()
 
     def key_up(self, event):
         self.script = self.rtc.GetValue()
@@ -66,3 +91,8 @@ class Controller(wx.Frame):
     def update_prompter_script(self):
         if self.prompter:
             self.prompter.script = self.script
+
+
+class ControllerLayout(Enum):
+    SIDE_BY_SIDE = 1
+    MONITOR_FULLSCREEN = 2
