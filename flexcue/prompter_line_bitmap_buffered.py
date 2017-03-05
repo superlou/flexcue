@@ -29,7 +29,8 @@ class Prompter(wx.Frame):
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_buffer, self.timer)
-        self.timer.Start(20)
+        self.framerate = 60
+        self.timer.Start(1000 / self.framerate)
         self.prompter = None
 
         self.text_color = wx.Colour(255, 255, 255)
@@ -42,7 +43,7 @@ class Prompter(wx.Frame):
         self.line_bitmaps = []
         self.monitor_update_callback = None
 
-        self.prev_paint_time = 0
+        self.prev_update_time = time.time()
 
     def resize(self, event):
         self.make_line_bitmaps()
@@ -53,16 +54,14 @@ class Prompter(wx.Frame):
         pass
 
     def update_buffer(self, event):
-        # now = time.time()
-        # print(now - self.prev_paint_time)
-        # self.prev_paint_time = now
-
-        self.y_scroll -= self.speed
-
         memDC = wx.MemoryDC()
         memDC.SelectObject(self.buffer)
 
-        lb = self.script_line[0]
+        # Calculate scroll right before we need it, allowing for timer jitter
+        now = time.time()
+        time_delta = now - self.prev_update_time
+        self.prev_update_time = now
+        self.y_scroll -= self.speed * (time_delta * self.framerate)
 
         draw_y = self.y_scroll
         script_line_index = 0
